@@ -1,5 +1,15 @@
 const pool = require("./pool.js")
 
+async function signupUser(username,email,password){
+    await pool.query("INSERT INTO users (username,email,password_hash) VALUES ($1,$2,$3);",[username,email,password]);
+}
+
+async function checkUser(email){
+    const {rows} = await pool.query("SELECT * FROM users WHERE email = $1", [email])
+    return rows;
+}
+
+
 async function getAllposts(){
     const {rows} = await pool.query("SELECT * FROM posts;");
     return rows;
@@ -33,6 +43,8 @@ async function deletePost(postid) {
 }
 
 module.exports = {
+    signupUser,
+    checkUser,
     getAllposts,
     insertPost,
     getPost,
