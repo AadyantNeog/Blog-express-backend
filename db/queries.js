@@ -30,3 +30,13 @@ async function deleteComment(commentid){
 async function deletePost(postid) {
     await pool.query("DELETE FROM posts WHERE id = $1;", [postid]);
 }
+
+module.exports = {
+    getAllposts,
+    insertPost,
+    getPost,
+    getPostComments,
+    insertComment,
+    deleteComment,
+    deletePost
+}
