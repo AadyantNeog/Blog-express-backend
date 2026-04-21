@@ -18,8 +18,9 @@ async function getPostComments(postid){
     const {rows} = await pool.query("SELECT * FROM comments where post_id = $1;", [postid]);
     return rows;
 }
-async function insertComment(){
-
+async function insertComment(postid, user_id, content){
+    const {rows} = await pool.query("INSERT INTO comments (post_id,user_id,content) VALUES ($1,$2,$3) RETURNING *;", [postid,user_id,content])
+    return rows;
 }
 async function deleteComment(commentid){
     await pool.query("DELETE FROM comments WHERE id = $1;", [commentid]);

@@ -8,10 +8,13 @@ app.use(express.urlencoded({extended: true}));
 app.use(cors());
 
 app.get("/posts", controllers.getPosts);
+app.get("/posts/:postid", controllers.getPost);
+app.get("/posts/:postid/comments", controllers.getPostComments);
+app.post("/posts/:postid/comments",controllers.postComment)
 /*app.post("/posts");
-app.get("/posts/:postid")
 
-app.get("/posts/:postid/comments");
+
+
 app.post("/posts/:postid/comments")
 app.delete("/post/:postid/comments/:commentid");
 
