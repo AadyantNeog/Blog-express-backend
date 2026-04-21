@@ -14,8 +14,9 @@ async function getAllposts(){
     const {rows} = await pool.query("SELECT * FROM posts;");
     return rows;
 }
-async function insertPost(){
-
+async function insertPost(user_id,title,content){
+    const {rows} = await pool.query("INSERT INTO posts (user_id,title,content) VALUES ($1,$2,$3) RETURNING *;",[user_id,title,content])
+    return rows;
 }
 async function getPost(postid){
     const {rows} = await pool.query("SELECT * FROM posts WHERE id = $1;", [postid]);

@@ -29,18 +29,14 @@ function authenticateToken(req, res, next) {
 app.post("/signup",controllers.signupUser);
 app.post("/login", controllers.loginUser);
 
+app.post("/posts",authenticateToken,controllers.postAPost);
 app.get("/posts", controllers.getPosts);
 app.get("/posts/:postid", controllers.getPost);
 app.get("/posts/:postid/comments", controllers.getPostComments);
 app.post("/posts/:postid/comments",authenticateToken, controllers.postComment)
-/*app.post("/posts");
+/*
 
-
-
-app.post("/posts/:postid/comments")
 app.delete("/post/:postid/comments/:commentid");
-
-
 app.delete("posts/:postid");*/
 
 app.listen(3000, () => {

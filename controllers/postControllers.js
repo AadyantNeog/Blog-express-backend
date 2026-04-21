@@ -2,6 +2,13 @@ const db = require("../db/queries.js")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
+async function postAPost(req,res){
+    const rows = await db.insertPost(req.user.id,req.body.title,req.body.content)
+    res.status(201).json({
+        message: "Post created successfully",
+        id: rows[0].id
+    });
+}
 async function getPosts(req,res) {
     const posts = await db.getAllposts();
     res.json({posts: posts})
@@ -56,6 +63,7 @@ async function loginUser(req,res){
 
 
 module.exports = {
+    postAPost,
     loginUser,
     signupUser,
     getPosts,
