@@ -1,5 +1,6 @@
 const {Pool} = require("pg");
+const config = require("../config.js");
 
 module.exports = new Pool({
-    connectionString: "postgresql://aadyant:1547_psql@localhost:5432/top_blog"
+    connectionString: config.databaseUrl
 })

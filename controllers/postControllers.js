@@ -1,6 +1,7 @@
 const db = require("../db/queries.js")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const config = require("../config.js")
 
 async function postAPost(req,res){
     const rows = await db.insertPost(req.user.id,req.body.title,req.body.content)
@@ -24,7 +25,13 @@ async function getPostComments(req,res){
 }
 
 async function postComment(req,res){
-    const comment = await db.insertComment(req.body.post_id,req.user.id,req.body.content);
+    if (req.body.post_id && String(req.body.post_id) !== String(req.params.postid)) {
+        return res.status(400).json({
+            message: "post_id does not match route parameter"
+        });
+    }
+
+    const comment = await db.insertComment(req.params.postid,req.user.id,req.body.content);
     res.json({
         comment: comment
     })
@@ -52,7 +59,7 @@ async function loginUser(req,res){
       return;
     }
 
-    jwt.sign({id: user.id,username: user.username,email: user.email}, 'firstWebsite', (err, token) => {
+    jwt.sign({id: user.id,username: user.username,email: user.email}, config.jwtSecret, (err, token) => {
         if (err) return res.status(500).json({ success: false });
         res.json({
             success: true,

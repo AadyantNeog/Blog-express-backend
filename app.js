@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors")
 const jwt = require("jsonwebtoken")
+const config = require("./config.js")
 const controllers = require("./controllers/postControllers.js")
 const app = express();
 
@@ -16,7 +17,7 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ message: "No token" });
     }
 
-    jwt.verify(token, "firstWebsite", (err, user) => {
+    jwt.verify(token, config.jwtSecret, (err, user) => {
         if (err) {
             return res.status(403).json({ message: "Invalid token" });
         }
@@ -39,6 +40,6 @@ app.post("/posts/:postid/comments",authenticateToken, controllers.postComment)
 app.delete("/post/:postid/comments/:commentid");
 app.delete("posts/:postid");*/
 
-app.listen(3000, () => {
-    console.log("Server is listening on port 3000");
+app.listen(config.port, () => {
+    console.log(`Server is listening on port ${config.port}`);
 })
