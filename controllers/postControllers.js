@@ -33,7 +33,10 @@ async function postComment(req,res){
 
     const comment = await db.insertComment(req.params.postid,req.user.id,req.body.content);
     res.json({
-        comment: comment
+        comment: comment.map((entry) => ({
+            ...entry,
+            username: req.user.username
+        }))
     })
 }
 async function signupUser(req,res) {

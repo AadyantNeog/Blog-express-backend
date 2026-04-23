@@ -11,7 +11,12 @@ async function checkUser(email){
 
 
 async function getAllposts(){
-    const {rows} = await pool.query("SELECT * FROM posts;");
+    const {rows} = await pool.query(`
+        SELECT posts.*, users.username
+        FROM posts
+        JOIN users ON users.id = posts.user_id
+        ORDER BY posts.created_at DESC;
+    `);
     return rows;
 }
 async function insertPost(user_id,title,content){
@@ -19,18 +24,33 @@ async function insertPost(user_id,title,content){
     return rows;
 }
 async function getPost(postid){
-    const {rows} = await pool.query("SELECT * FROM posts WHERE id = $1;", [postid]);
+    const {rows} = await pool.query(`
+        SELECT posts.*, users.username
+        FROM posts
+        JOIN users ON users.id = posts.user_id
+        WHERE posts.id = $1;
+    `, [postid]);
     return rows;
 }
 
 
 
 async function getPostComments(postid){
-    const {rows} = await pool.query("SELECT * FROM comments where post_id = $1;", [postid]);
+    const {rows} = await pool.query(`
+        SELECT comments.*, users.username
+        FROM comments
+        JOIN users ON users.id = comments.user_id
+        WHERE comments.post_id = $1
+        ORDER BY comments.created_at ASC;
+    `, [postid]);
     return rows;
 }
 async function insertComment(postid, user_id, content){
-    const {rows} = await pool.query("INSERT INTO comments (post_id,user_id,content) VALUES ($1,$2,$3) RETURNING *;", [postid,user_id,content])
+    const {rows} = await pool.query(`
+        INSERT INTO comments (post_id,user_id,content)
+        VALUES ($1,$2,$3)
+        RETURNING *;
+    `, [postid,user_id,content])
     return rows;
 }
 async function deleteComment(commentid){
