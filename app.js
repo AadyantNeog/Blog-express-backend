@@ -27,14 +27,32 @@ function authenticateToken(req, res, next) {
     });
 }
 
+function attachUserIfPresent(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        req.user = null;
+        return next();
+    }
+
+    jwt.verify(token, config.jwtSecret, (err, user) => {
+        req.user = err ? null : user;
+        next();
+    });
+}
+
 app.post("/signup",controllers.signupUser);
 app.post("/login", controllers.loginUser);
 
 app.post("/posts",authenticateToken,controllers.postAPost);
-app.get("/posts", controllers.getPosts);
-app.get("/posts/:postid", controllers.getPost);
-app.get("/posts/:postid/comments", controllers.getPostComments);
-app.post("/posts/:postid/comments",authenticateToken, controllers.postComment)
+app.get("/posts", attachUserIfPresent, controllers.getPosts);
+app.get("/me/posts", authenticateToken, controllers.getMyPosts);
+app.get("/posts/:postid", attachUserIfPresent, controllers.getPost);
+app.get("/posts/:postid/comments", attachUserIfPresent, controllers.getPostComments);
+app.post("/posts/:postid/comments",authenticateToken, controllers.postComment);
+app.post("/posts/:postid/like", authenticateToken, controllers.togglePostLike);
+app.post("/posts/:postid/comments/:commentid/like", authenticateToken, controllers.toggleCommentLike);
 /*
 
 app.delete("/post/:postid/comments/:commentid");

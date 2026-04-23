@@ -4,11 +4,21 @@ top_blog=# SELECT * FROM users;
 (0 rows)
 
 top_blog=# SELECT * FROM posts;
- id | user_id | title | content | is_published | created_at | updated_at 
-----+---------+-------+---------+--------------+------------+------------
+ id | user_id | title | content | is_published | likes_count | created_at | updated_at 
+----+---------+-------+---------+--------------+-------------+------------+------------
 (0 rows)
 
 top_blog=# SELECT * FROM comments;
- id | post_id | user_id | parent_id | content | created_at 
-----+---------+---------+-----------+---------+------------
+ id | post_id | user_id | parent_id | content | likes_count | created_at 
+----+---------+---------+-----------+---------+-------------+------------
+(0 rows)
+
+top_blog=# SELECT * FROM post_likes;
+ user_id | post_id | created_at 
+---------+---------+------------
+(0 rows)
+
+top_blog=# SELECT * FROM comment_likes;
+ user_id | comment_id | created_at 
+---------+------------+------------
 (0 rows)

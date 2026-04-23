@@ -11,16 +11,24 @@ async function postAPost(req,res){
     });
 }
 async function getPosts(req,res) {
-    const posts = await db.getAllposts();
+    const posts = await db.getAllposts(req.user?.id ?? null);
     res.json({posts: posts})
 }
 
+async function getMyPosts(req, res) {
+    const posts = await db.getPostsByUser(req.user.id);
+    res.json({
+        username: req.user.username,
+        posts
+    });
+}
+
 async function getPost(req,res){
-    const post = await db.getPost(req.params.postid);
+    const post = await db.getPost(req.params.postid, req.user?.id ?? null);
     res.json({post: post});
 }
 async function getPostComments(req,res){
-    const comments = await db.getPostComments(req.params.postid)
+    const comments = await db.getPostComments(req.params.postid, req.user?.id ?? null)
     res.json({comments: comments});
 }
 
@@ -35,7 +43,8 @@ async function postComment(req,res){
     res.json({
         comment: comment.map((entry) => ({
             ...entry,
-            username: req.user.username
+            username: req.user.username,
+            liked_by_user: false
         }))
     })
 }
@@ -71,13 +80,49 @@ async function loginUser(req,res){
     });
 }
 
+async function togglePostLike(req, res) {
+    const post = await db.getPost(req.params.postid, req.user.id);
+
+    if (post.length === 0) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    const result = await db.togglePostLike(req.params.postid, req.user.id);
+
+    res.json({
+        message: result.liked ? "Post liked" : "Post unliked",
+        liked: result.liked,
+        likes_count: result.likes_count
+    });
+}
+
+async function toggleCommentLike(req, res) {
+    const comments = await db.getPostComments(req.params.postid, req.user.id);
+    const commentExists = comments.some((comment) => String(comment.id) === String(req.params.commentid));
+
+    if (!commentExists) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    const result = await db.toggleCommentLike(req.params.commentid, req.user.id);
+
+    res.json({
+        message: result.liked ? "Comment liked" : "Comment unliked",
+        liked: result.liked,
+        likes_count: result.likes_count
+    });
+}
+
 
 module.exports = {
     postAPost,
     loginUser,
     signupUser,
     getPosts,
+    getMyPosts,
     getPost,
     getPostComments,
-    postComment
+    postComment,
+    togglePostLike,
+    toggleCommentLike
 }
